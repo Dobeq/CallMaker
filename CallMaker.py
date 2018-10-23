@@ -9,6 +9,8 @@ channels = dict()
 async def on_message(message):
     if message.author == client.user:
         return
+    if message.author in channels:
+        return
     if message.content.startswith('call'):
         call = message.content.split(' ')
     else:
@@ -20,8 +22,6 @@ async def on_message(message):
     if call[1] == 'new':
         channel = await client.create_channel(message.server, "" + message.author.nick + 
                                     "\'s server", type=discord.ChannelType.voice)
-        if message.author in channels:
-            return
         channels[message.author] = channel
         founder = discord.PermissionOverwrite()
         founder.mute_members = True
