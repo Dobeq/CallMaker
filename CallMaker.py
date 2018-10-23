@@ -18,7 +18,11 @@ async def on_message(message):
             await client.delete_channel(channel)
         sys.exit()
     if call[1] == 'new':
-        channel = await client.create_channel(message.server, "" + message.author.nick + 
+        if len(call) > 2:
+            channel = await client.create_channel(message.server, "" + message.author.nick + 
+                                    "\'s server", type=discord.ChannelType.voice, parent=call[2])
+        else:
+            channel = await client.create_channel(message.server, "" + message.author.nick + 
                                     "\'s server", type=discord.ChannelType.voice)
         if message.author in channels:
             return
@@ -26,7 +30,6 @@ async def on_message(message):
         founder = discord.PermissionOverwrite()
         founder.mute_members = True
         founder.move_members = True
-        
         fool = discord.PermissionOverwrite()
         fool.mute_members = False
         fool.mute_members = False
@@ -45,10 +48,10 @@ async def on_message(message):
         await client.send_message(message.channel, 'Removed the channel for ' + message.author.nick + '')
 @client.event
 async def on_voice_state_update(before, after):
-        if !after.voice.mute:
+        if not after.voice.mute:
             for channel in iter(channels.values()):
                 if after.voice.voice_channel == channel:
-                    await server_voice_state(after, mute=True)
+                    await client.server_voice_state(after, mute=True)
 client.run(TOKEN)
 
         
