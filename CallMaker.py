@@ -9,8 +9,6 @@ channels = dict()
 async def on_message(message):
     if message.author == client.user:
         return
-    if message.author in channels:
-        return
     if message.content.startswith('call'):
         call = message.content.split(' ')
     else:
@@ -18,18 +16,24 @@ async def on_message(message):
     if call[1] == 'die':
         for channel in iter(channels.values()):
             await client.delete_channel(channel)
+    if call[1] == 'scram':
         sys.exit()
     if call[1] == 'new':
+        if message.author in channels:
+            return
         if len(call) > 2:
+            parent_id = getParent(message.server, call[2])
             channel = await client.create_channel(message.server, "" + message.author.nick + 
-                                    "\'s server", type=discord.ChannelType.voice, parent=call[2])
+                                    "\'s server", type=discord.ChannelType.voice, parent=parent_id)
         else:
             channel = await client.create_channel(message.server, "" + message.author.nick + 
                                     "\'s server", type=discord.ChannelType.voice)
+        
         channels[message.author] = channel
         founder = discord.PermissionOverwrite()
         founder.mute_members = True
         founder.move_members = True
+        
         fool = discord.PermissionOverwrite()
         fool.mute_members = False
         fool.mute_members = False
@@ -52,6 +56,13 @@ async def on_voice_state_update(before, after):
             for channel in iter(channels.values()):
                 if after.voice.voice_channel == channel:
                     await client.server_voice_state(after, mute=True)
+def getParent(server, name):
+    name = name.lower()
+    for channel in server.channels:
+        for i in range(len(channel.name) - len(name) + 1):
+            if channel.name[i:i+len(name)].lower() == name:
+                if channel.type == discord.ChannelType.category:
+                    return channel.id
 client.run(TOKEN)
 
         
