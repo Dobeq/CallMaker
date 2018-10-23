@@ -9,4 +9,6 @@ Usage:
   
   call end: destroys any voice channel owned by the sender
   
-  call die: turns off the bot on local computer
+  call die: destroys all calls created this session
+  
+  call scram: turns off the bot
