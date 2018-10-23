@@ -43,7 +43,12 @@ async def on_message(message):
             channels.pop(message.author)
             
         await client.send_message(message.channel, 'Removed the channel for ' + message.author.nick + '')
-            
+@client.event
+async def on_voice_state_update(before, after):
+        if !after.voice.mute:
+            for channel in iter(channels.values()):
+                if after.voice.voice_channel == channel:
+                    await server_voice_state(after, mute=True)
 client.run(TOKEN)
 
         
