@@ -36,7 +36,7 @@ async def on_message(message):
         
         fool = discord.PermissionOverwrite()
         fool.mute_members = False
-        fool.mute_members = False
+        fool.move_members = False
         
         for member in message.server.members:
             if member == message.author:
@@ -53,15 +53,22 @@ async def on_message(message):
 @client.event
 async def on_voice_state_update(before, after):
         if not after.voice.mute:
-            for channel in iter(channels.values()):
-                if after.voice.voice_channel == channel:
+            if after.voice.voice_channel in iter(channels.values()):
+                if before.voice.voice_channel not in iter(channels.values()):
                     await client.server_voice_state(after, mute=True)
+                    
+                    
+        else:
+            if after.voice.voice_channel not in iter(channels.values()):
+                if before.voice.voice_channel in iter(channels.values()):
+                    await client.server_voice_state(after, mute=False)
 def getParent(server, name):
     name = name.lower()
     for channel in server.channels:
         for i in range(len(channel.name) - len(name) + 1):
             if channel.name[i:i+len(name)].lower() == name:
-                if channel.type == discord.ChannelType.category:
+                #somehow type is an int???
+                if channel.type == 4:
                     return channel.id
 client.run(TOKEN)
 
